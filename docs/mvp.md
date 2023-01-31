@@ -11,3 +11,7 @@
     - save song info to format
     - unparse formatted file to reload a song
 
+### Note
+
+This is the *bare minimum*. I would like to be able to add a few things on top of this, some of which is described in the features.md documens. 
+

@@ -1,6 +1,6 @@
 # Minimum Viable Product
 
-- GUI
+- GUI - Clickable Grid
     - eight tracks, preloaded drum sounds
     - sixteen on/off boxes per track
     - while song playing light up column for each beat
@@ -10,4 +10,4 @@
 - Files
     - save song info to format
     - unparse formatted file to reload a song
-- 
+

@@ -42,7 +42,13 @@ class Section(object):
         self.name:str = name
         self.channel:[Channel] = []
 
-    def addChannel(self, )
+    def addChannel(self, name, nnotes, soud):
+        pass
+
+class Sound(object):
+
+    def __init__(self, name:str):
+        self.name = name
 
 class Channel(object):
 
@@ -52,7 +58,3 @@ class Channel(object):
         self.played:[bool] = [False for _ in range(nnotes)]
         self.volume:float = 0.5
 
-class Sound(object):
-
-    def __init__(self, name:str):
-        self.name = name

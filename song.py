@@ -20,35 +20,49 @@ a sound is some sample to play and a name
     - TODO: implement a sound
 """
 
+import pyaudio as pa
+
 
 class Song(object):
 
     def __init__(self, name:str):
         self.name:str = name
-        self.secs:[Section] = []
+        self.sections:[Section] = []
         self.tempo:int = 100
         self.nbeats:int = 8
         self.nbars:int = 2
+        self.addSection()
+        self.curSection = self.sections[0]
     
     def addSection(self, name:str=None):
-        if name: s = Section(str(len(self.secs)))
-        else : s = Section(name)
-        self.secs += [s]
+        if not name: s = Section(str(len(self.sections)), self.nbeats*self.nbars)
+        else : s = Section(name, self.nbeats*self.nbars)
+        self.sections += [s]
     
 class Section(object):
 
     def __init__(self, name:str, nnotes:int):
         self.nnotes = nnotes
         self.name:str = name
-        self.channel:[Channel] = []
+        self.channels:[Channel] = []
+        kick = Sound("kick", "kick.wav")
+        snare = Sound("snare", "snare.wav")
+        self.addChannel(nnotes, kick)
+        self.addChannel(nnotes, snare)
 
-    def addChannel(self, name, nnotes, soud):
-        pass
+    def addChannel(self, nnotes:int, sound, name:str=None, ):
+        if not name: c = Channel(sound.name, nnotes, sound)
+        else: c = Channel(name, nnotes, sound)
+        self.channels += [c]
 
 class Sound(object):
 
-    def __init__(self, name:str):
+    def __init__(self, name:str, path:str):
         self.name = name
+        self.wav = path
+    
+    def play(self):
+        pass
 
 class Channel(object):
 

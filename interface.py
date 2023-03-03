@@ -51,7 +51,7 @@ class Interface(object):
             if event.type == MOUSEBUTTONDOWN:
                 
                 mx, my = pg.mouse.get_pos()
-                print(f"mouse click at {mx}, {my}")
+                if verb: print(f"mouse click at {mx}, {my}")
                 self.clickNote(song, mx, my)
         return True
 

@@ -19,25 +19,33 @@ a sound is some sample to play and a name
     - the idea here is that I want to be able to generate sounds and also use samples that come from files
     - TODO: implement a sound
 """
-
-import pyaudio as pa
-
+import pygame as pg
 
 class Song(object):
 
     def __init__(self, name:str):
         self.name:str = name
         self.sections:[Section] = []
-        self.tempo:int = 100
+        self.tempo:int = 180
         self.nbeats:int = 8
         self.nbars:int = 2
+        #self.player = pa.PyAudio()
         self.addSection()
         self.curSection = self.sections[0]
+        self.play = True
     
     def addSection(self, name:str=None):
         if not name: s = Section(str(len(self.sections)), self.nbeats*self.nbars)
         else : s = Section(name, self.nbeats*self.nbars)
         self.sections += [s]
+
+    def playNote(self, noteIndex):
+        soundsToPlay = []
+        for chan in self.curSection.channels:
+            if chan.played[noteIndex]: 
+                soundsToPlay += [chan.sound]
+        for sound in soundsToPlay:
+            sound.play()
     
 class Section(object):
 
@@ -59,10 +67,11 @@ class Sound(object):
 
     def __init__(self, name:str, path:str):
         self.name = name
-        self.wav = path
+        self.path = path
+        self.noise = pg.mixer.Sound(self.path)
     
     def play(self):
-        pass
+        pg.mixer.Sound.play(self.noise)
 
 class Channel(object):
 

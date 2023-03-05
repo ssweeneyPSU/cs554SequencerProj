@@ -29,6 +29,7 @@ class Song(object):
         self.tempo:int = 180
         self.nbeats:int = 8
         self.nbars:int = 2
+        self.nnotes = self.nbeats*self.nbars
         #self.player = pa.PyAudio()
         self.addSection()
         self.curSection = self.sections[0]
@@ -55,6 +56,7 @@ class Section(object):
         self.channels:[Channel] = []
         kick = Sound("kick", "kick.wav")
         snare = Sound("snare", "snare.wav")
+        self.nchannels = 0
         self.addChannel(nnotes, kick)
         self.addChannel(nnotes, snare)
 
@@ -62,6 +64,7 @@ class Section(object):
         if not name: c = Channel(sound.name, nnotes, sound)
         else: c = Channel(name, nnotes, sound)
         self.channels += [c]
+        self.nchannels += 1
 
 class Sound(object):
 

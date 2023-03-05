@@ -11,14 +11,16 @@ from time import time
 verb = True
 
 def main():
+    song:Song = Song("test")
     gui:Interface = Interface()
     gui.start()
-    song:Song = Song("test")
     running:bool = True
     curNote = 0
     nextTimeToPlay = time() + 1
     while running:
         running = gui.checkEvents(song)
+        gui.backgroundFill()
+        gui.drawTools()
         gui.drawSong(song)
         gui.update()
         if song.play and time() >= nextTimeToPlay:

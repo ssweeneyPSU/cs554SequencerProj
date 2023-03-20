@@ -22,30 +22,29 @@ class Controller(object):
         self.noteInterval = 60/self.song.tempo
         self.curNote = 0
         self.running = True
+        self.nextTimeToPlay = 0
     
     def run(self):
         pg.mixer.init()
-        root = tk.Tk()
-        root.withdraw()
-
         #init test song
+        """
         kick = Sound("kick", "kick.wav")
         snare = Sound("snare", "snare.wav")
         self.song.curSection.addChannel(self.song.nnotes, kick)
         self.song.curSection.addChannel(self.song.nnotes, snare)
+        """
 
         self.gui.start(self.song.nnotes)
         curNote = 0
-        nextTimeToPlay = time() + 1
         while self.running:
             self.executeEvent(self.gui.checkEvents())
             self.gui.backgroundFill()
             self.gui.drawSong(self.song)
             self.gui.update()
-            if self.song.play and time() >= nextTimeToPlay:
+            if self.song.play and time() >= self.nextTimeToPlay:
                 if verb: print(f"triggered play note at index {curNote}")
                 self.song.playNote(curNote)
-                nextTimeToPlay += self.noteInterval
+                self.nextTimeToPlay += self.noteInterval
                 curNote += 1
                 if curNote >= self.song.nnotes:
                     curNote = 0
@@ -59,17 +58,28 @@ class Controller(object):
                 self.running = False
             case ClickNoteEvent(chani,notei):
                 if verb: print("click note event")
-                if verb: print(f"before toggle play={self.song.curSection.channels[chani].played[notei]}")
                 self.song.curSection.channels[chani].toggleNote(notei)
-                if verb: print(f"after toggle play={self.song.curSection.channels[chani].played[notei]}")
             case ClickPlayEvent():
+                if verb: print("click play event")
                 self.song.play = True
                 self.gui.play = True
                 self.startTime = time()
+                self.nextTimeToPlay = self.startTime + self.noteInterval
             case ClickPauseEvent():
+                if verb: print("click pause event")
                 self.song.play = False
                 self.gui.play = False
                 self.curNote = 0
+            case AddChannelEvent():
+                if verb: print("caught add channel")
+                top = tk.Tk()
+                top.withdraw()
+                soundPath = filedialog.askopenfilename(parent=top)
+                top.destroy()
+                soundName = soundPath.split('\\')[-1].split('.')[0]
+                newSound = Sound(soundName, soundPath)
+                self.song.curSection.addChannel(self.song.nnotes, newSound, soundName)
+                self.gui.set_nchannels(self.song.curSection.nchannels)
             case None:
                 pass
             case _:

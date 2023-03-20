@@ -108,8 +108,9 @@ class Interface(object):
     
     def executeMouseEvent(self):
         mx, my = pg.mouse.get_pos()
-        if verb: print(f"mouse click at {mx}, {my}")
+        if verb: print(f"execute mouse click at {mx}, {my}")
         if my < self.toolbar_h:
+            if verb: print(f"going to click button")
             return self.clickButton(mx, my)
         return self.clickNote(mx, my)
 
@@ -122,19 +123,28 @@ class Interface(object):
         if verb: print(f"clicked chan {chanClicked}, note {noteClicked}")
         return ClickNoteEvent(chanClicked,noteClicked)
 
-    def clickButton(self, mx, my):
+    def clickButton(self, mx, my) -> Event:
+        if verb: print(f"top of click button at {mx}, {my}")
         for button in self.buttons:
+            if verb: print(f"in clickButton, button to check: {button.name}")
             if button.is_clicked(mx, my):
+                if verb: print("button was clicked")
                 match button.name:
                     case "play":
                         if button.color == PLAYGREEN:
-                            button.color = PAUSERED
+                            button.changeColor(PAUSERED)
+                            if verb: print("returning a click play event")
                             return ClickPlayEvent()
                         elif button.color == PAUSERED:
-                            button.color = PLAYGREEN
+                            button.changeColor(PLAYGREEN)
+                            if verb: print("returning a clickPauseEvent")
                             return ClickPauseEvent()
                     case "add channel":
+                        if verb: print("returning an AddChannelEvent")
                         return AddChannelEvent()
+                    case _:
+                        print(f"caught unexpected button in gui.clickButton: {button.name}")
+
     
 class Button(object):
 
@@ -148,6 +158,9 @@ class Button(object):
         self.font = None
         self.name = name
 
+    def changeColor(self, newColor):
+        self.color = newColor
+
     def draw(self, screen):
         if not self.font: 
             self.font = pg.font.SysFont('Arial', self.height-TOOLMARGIN)
@@ -156,4 +169,4 @@ class Button(object):
         screen.blit(name, (self.left, self.top))
 
     def is_clicked(self, mx, my):
-        return mx >= self.top and mx <= self.top+self.width and my >= self.left and my <= self.left+self.height
+        return mx >= self.left and mx <= self.left+self.width and my >= self.top and my <= self.top+self.height

@@ -21,6 +21,8 @@ a sound is some sample to play and a name
 """
 import pygame as pg
 
+verb:bool = True
+
 class Song(object):
 
     def __init__(self, name:str):
@@ -28,11 +30,12 @@ class Song(object):
         self.sections:[Section] = []
         self.tempo:int = 180
         self.nbeats:int = 8
-        self.nbars:int = 2
+        self.nbars:int = 4
+        self.nnotes = self.nbeats*self.nbars
         #self.player = pa.PyAudio()
         self.addSection()
         self.curSection = self.sections[0]
-        self.play = True
+        self.play = False
     
     def addSection(self, name:str=None):
         if not name: s = Section(str(len(self.sections)), self.nbeats*self.nbars)
@@ -53,15 +56,15 @@ class Section(object):
         self.nnotes = nnotes
         self.name:str = name
         self.channels:[Channel] = []
-        kick = Sound("kick", "kick.wav")
-        snare = Sound("snare", "snare.wav")
-        self.addChannel(nnotes, kick)
-        self.addChannel(nnotes, snare)
+        
+        self.nchannels = 0
+
 
     def addChannel(self, nnotes:int, sound, name:str=None, ):
         if not name: c = Channel(sound.name, nnotes, sound)
         else: c = Channel(name, nnotes, sound)
         self.channels += [c]
+        self.nchannels += 1
 
 class Sound(object):
 
@@ -80,4 +83,8 @@ class Channel(object):
         self.sound:Sound = sound
         self.played:[bool] = [False for _ in range(nnotes)]
         self.volume:float = 0.5
+
+    def toggleNote(self, notei):
+        if verb: print("toggled note")
+        self.played[notei] = not self.played[notei]
 

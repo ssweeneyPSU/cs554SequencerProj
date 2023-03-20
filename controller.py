@@ -8,6 +8,8 @@ from song import *
 from interface import Interface
 from time import time
 from events import *
+import tkinter as tk
+from tkinter import filedialog
 
 verb:bool = True
 
@@ -23,6 +25,8 @@ class Controller(object):
     
     def run(self):
         pg.mixer.init()
+        root = tk.Tk()
+        root.withdraw()
 
         #init test song
         kick = Sound("kick", "kick.wav")

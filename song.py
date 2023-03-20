@@ -28,7 +28,7 @@ class Song(object):
     def __init__(self, name:str):
         self.name:str = name
         self.sections:[Section] = []
-        self.tempo:int = 180
+        self.tempo:int = 100
         self.nbeats:int = 8
         self.nbars:int = 4
         self.nnotes = self.nbeats*self.nbars

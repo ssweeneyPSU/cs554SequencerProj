@@ -48,6 +48,7 @@ class Controller(object):
                 curNote += 1
                 if curNote >= self.song.nnotes:
                     curNote = 0
+            
         self.gui.quit()
 
     def executeEvent(self, e:Event):
@@ -70,6 +71,7 @@ class Controller(object):
                 self.song.play = False
                 self.gui.play = False
                 self.curNote = 0
+                self.nextTimeToPlay = 0
             case AddChannelEvent():
                 if verb: print("caught add channel")
                 top = tk.Tk()
@@ -80,6 +82,12 @@ class Controller(object):
                 newSound = Sound(soundName, soundPath)
                 self.song.curSection.addChannel(self.song.nnotes, newSound, soundName)
                 self.gui.set_nchannels(self.song.curSection.nchannels)
+            case LowerTempoEvent():
+                self.song.tempo -= 1
+                self.noteInterval = 60/self.song.tempo
+            case RaiseTempoEvent():
+                self.song.tempo += 1
+                self.noteInterval = 60/self.song.tempo
             case None:
                 pass
             case _:

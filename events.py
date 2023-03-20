@@ -29,3 +29,11 @@ class AddChannelEvent(Event):
 class QuitEvent(Event):
     def __init__(self):
         super().__init__()
+
+class RaiseTempoEvent(Event):
+    def __init__(self):
+        super().__init__()
+
+class LowerTempoEvent(Event):
+    def __init__(self):
+        super().__init__()

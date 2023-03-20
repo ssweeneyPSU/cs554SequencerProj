@@ -75,6 +75,9 @@ class Interface(object):
     def initToolbar(self):
         self.buttons += [Button(MARGIN+TOOLMARGIN,self.tool_y, self.tool_h,self.tool_h, "", PLAYGREEN, "play")]
         self.buttons += [Button(MARGIN+2*TOOLMARGIN+self.tool_h, self.tool_y, 2*self.tool_h, self.tool_h, "ADD", TOOLGREY, "add channel")]
+        self.buttons += [Button(MARGIN+3*TOOLMARGIN+3*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, "<", TOOLGREY, "lower tempo")]
+        self.buttons += [Button(MARGIN+4*TOOLMARGIN+3*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "100", WHITE, "tempo")]
+        self.buttons += [Button(MARGIN+5*TOOLMARGIN+5*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, ">", TOOLGREY, "raise tempo")]
 
     def drawToolbar(self):
         if self.nbuttons == 0: self.initToolbar()
@@ -142,6 +145,18 @@ class Interface(object):
                     case "add channel":
                         if verb: print("returning an AddChannelEvent")
                         return AddChannelEvent()
+                    case "lower tempo":
+                        tempoButton = [b for b in self.buttons if b.name=="tempo"][0]
+                        tempoButton.text = str(int(tempoButton.text)-1)
+                        if verb: print(f"new tempo button text: {tempoButton.text}")
+                        tempoButton.draw(self.screen)
+                        return LowerTempoEvent()
+                    case "tempo":
+                        return None
+                    case "raise tempo":
+                        tempoButton = [b for b in self.buttons if b.name=="tempo"][0]
+                        tempoButton.text = str(int(tempoButton.text)+1)
+                        return RaiseTempoEvent()
                     case _:
                         print(f"caught unexpected button in gui.clickButton: {button.name}")
 

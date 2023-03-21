@@ -10,6 +10,7 @@ from time import time
 from events import *
 import tkinter as tk
 from tkinter import filedialog
+import pickle
 
 verb:bool = True
 
@@ -88,6 +89,13 @@ class Controller(object):
             case RaiseTempoEvent():
                 self.song.tempo += 1
                 self.noteInterval = 60/self.song.tempo
+            case SaveEvent():
+                top = tk.Tk()
+                top.withdraw()
+                filePath = filedialog.asksaveasfilename(parent=top)
+                top.destroy()
+                with open(filePath, 'wb') as saveFile:
+                    pickle.dump(self.song, saveFile)
             case None:
                 pass
             case _:

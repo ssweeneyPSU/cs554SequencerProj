@@ -37,3 +37,7 @@ class RaiseTempoEvent(Event):
 class LowerTempoEvent(Event):
     def __init__(self):
         super().__init__()
+
+class SaveEvent(Event):
+    def __init__(self):
+        super().__init__()

@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import filedialog
 import pickle
 
-verb:bool = True
+verb:bool = False
 
 class Controller(object):
 
@@ -21,7 +21,7 @@ class Controller(object):
         self.gui = gui
         self.startTime = 0
         self.noteInterval = 60/self.song.tempo
-        self.curNote = 0
+        self.curNote = -1
         self.running = True
         self.nextTimeToPlay = 0
         self.player = Player()
@@ -31,20 +31,18 @@ class Controller(object):
         pg.mixer.init()
 
         self.gui.start(self.song.nnotes)
-        curNote = 0
         while self.running:
             self.executeEvent(self.gui.checkEvents())
             self.gui.backgroundFill()
-            self.gui.drawSong(self.song)
+            self.gui.drawSong(self.song, self.curNote)
             self.gui.update()
             if self.song.play and time() >= self.nextTimeToPlay:
-                if verb: print(f"triggered play note at index {curNote}")
-                #self.song.playNote(curNote)
-                self.player.playSounds([i for i in range(self.song.curSection.nchannels) if self.song.curSection.channels[i].played[curNote]])    
+                if verb: print(f"triggered play note at index {self.curNote}")
+                self.player.playSounds([i for i in range(self.song.curSection.nchannels) if self.song.curSection.channels[i].played[self.curNote]])    
                 self.nextTimeToPlay += self.noteInterval
-                curNote += 1
-                if curNote >= self.song.nnotes:
-                    curNote = 0
+                self.curNote += 1
+                if self.curNote >= self.song.nnotes:
+                    self.curNote = 0
             
         self.gui.quit()
 
@@ -54,20 +52,21 @@ class Controller(object):
         match e:
             case QuitEvent():
                 self.running = False
-            case ClickNoteEvent(chani,notei):
+            case NoteEvent(chani,notei):
                 if verb: print("click note event")
                 self.song.curSection.channels[chani].toggleNote(notei)
-            case ClickPlayEvent():
+            case PlayEvent():
                 if verb: print("click play event")
                 self.song.play = True
                 self.gui.play = True
                 self.startTime = time()
                 self.nextTimeToPlay = self.startTime + self.noteInterval
-            case ClickPauseEvent():
+                self.curNote = 0
+            case PauseEvent():
                 if verb: print("click pause event")
                 self.song.play = False
                 self.gui.play = False
-                self.curNote = 0
+                self.curNote = -1
                 self.nextTimeToPlay = 0
             case AddChannelEvent():
                 if verb: print("caught add channel")
@@ -82,10 +81,10 @@ class Controller(object):
                 self.gui.set_nchannels(self.song.curSection.nchannels)
                 self.player.addSound(soundPath)
             case LowerTempoEvent():
-                self.song.tempo -= 1
+                self.song.tempo -= 5
                 self.noteInterval = 60/self.song.tempo
             case RaiseTempoEvent():
-                self.song.tempo += 1
+                self.song.tempo += 5
                 self.noteInterval = 60/self.song.tempo
             case SaveEvent():
                 top = tk.Tk()
@@ -96,7 +95,7 @@ class Controller(object):
                 with open(filePath, 'wb') as saveFile:
                     pickle.dump(self.song, saveFile)
             case LoadEvent():
-                self.executeEvent(ClickPauseEvent())
+                self.executeEvent(PauseEvent())
                 top = tk.Tk()
                 top.withdraw()
                 loadPath = filedialog.askopenfilename(parent=top)

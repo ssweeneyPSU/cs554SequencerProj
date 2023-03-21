@@ -79,7 +79,8 @@ class Interface(object):
         self.buttons += [Button(MARGIN+3*TOOLMARGIN+3*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, "<", TOOLGREY, "lower tempo")]
         self.buttons += [Button(MARGIN+4*TOOLMARGIN+3*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Tempo", TOOLGREY, "tempo")]
         self.buttons += [Button(MARGIN+5*TOOLMARGIN+5*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, ">", TOOLGREY, "raise tempo")]
-        self.buttons += [Button(MARGIN+6*TOOLMARGIN+5*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Save", TOOLGREY, "save")]
+        self.buttons += [Button(MARGIN+6*TOOLMARGIN+5*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h+self.tool_h//2, self.tool_h, "Save", TOOLGREY, "save")]
+        self.buttons += [Button(MARGIN+8*TOOLMARGIN+6*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Load", TOOLGREY, "load")]
         
 
     def drawToolbar(self):
@@ -158,6 +159,8 @@ class Interface(object):
                         return RaiseTempoEvent()
                     case "save":
                         return SaveEvent()
+                    case "load":
+                        return LoadEvent()
                     case _:
                         print(f"caught unexpected button in gui.clickButton: {button.name}")
 

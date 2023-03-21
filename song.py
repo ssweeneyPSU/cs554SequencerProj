@@ -29,7 +29,7 @@ class Song(object):
         self.name:str = name
         self.sections:[Section] = []
         self.tempo:int = 100
-        self.nbeats:int = 8
+        self.nbeats:int = 4
         self.nbars:int = 4
         self.nnotes = self.nbeats*self.nbars
         #self.player = pa.PyAudio()
@@ -56,7 +56,6 @@ class Section(object):
         self.nnotes = nnotes
         self.name:str = name
         self.channels:[Channel] = []
-        
         self.nchannels = 0
 
 
@@ -71,7 +70,7 @@ class Sound(object):
     def __init__(self, name:str, path:str):
         self.name = name
         self.path = path
-        self.noise = pg.mixer.Sound(self.path)
+        #self.noise = pg.mixer.Sound(self.path)
     
     def play(self):
         pg.mixer.Sound.play(self.noise)

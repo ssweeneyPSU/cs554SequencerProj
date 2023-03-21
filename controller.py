@@ -96,6 +96,17 @@ class Controller(object):
                 top.destroy()
                 with open(filePath, 'wb') as saveFile:
                     pickle.dump(self.song, saveFile)
+            case LoadEvent():
+                self.executeEvent(ClickPauseEvent())
+                top = tk.Tk()
+                top.withdraw()
+                loadPath = filedialog.askopenfilename(parent=top)
+                top.destroy()
+                with open(loadPath, 'rb') as loadFile:
+                    newSong = pickle.load(loadFile)
+                    self.song = newSong
+                    self.gui.set_nnotes(newSong.nnotes)
+                    self.gui.set_nchannels(newSong.curSection.nchannels)
             case None:
                 pass
             case _:

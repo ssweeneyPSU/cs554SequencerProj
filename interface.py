@@ -49,6 +49,7 @@ class Interface(object):
         self.channeltitle_w = int(CHANNELTITLEFRAC*(self.w-2*MARGIN))
         self.channel_x = self.channeltitle_w+2*MARGIN
         self.note_w = 0
+        self.font = None
 
     def start(self, init_nnotes):
         pg.init()
@@ -69,18 +70,34 @@ class Interface(object):
     def set_nchannels(self, new_nnchannels):
         self.nchannels = new_nnchannels
         self.channel_h = (self.h - self.toolbar_h)//8 if self.nchannels <= 8 else (self.h - self.toolbar_h)//self.nchannels
+        self.font = pg.font.SysFont('Arial', int(self.channel_h*TEXTFRAC))
 
     def backgroundFill(self, color=BLACK):
         self.screen.fill(color)
     
     def initToolbar(self):
-        self.buttons += [Button(MARGIN+TOOLMARGIN,self.tool_y, self.tool_h,self.tool_h, "", PLAYGREEN, "play")]
-        self.buttons += [Button(MARGIN+2*TOOLMARGIN+self.tool_h, self.tool_y, 2*self.tool_h, self.tool_h, "ADD", TOOLGREY, "add channel")]
-        self.buttons += [Button(MARGIN+3*TOOLMARGIN+3*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, "<", TOOLGREY, "lower tempo")]
-        self.buttons += [Button(MARGIN+4*TOOLMARGIN+3*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Tempo", TOOLGREY, "tempo")]
-        self.buttons += [Button(MARGIN+5*TOOLMARGIN+5*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, ">", TOOLGREY, "raise tempo")]
-        self.buttons += [Button(MARGIN+6*TOOLMARGIN+5*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h+self.tool_h//2, self.tool_h, "Save", TOOLGREY, "save")]
-        self.buttons += [Button(MARGIN+8*TOOLMARGIN+6*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Load", TOOLGREY, "load")]
+        tool_x = MARGIN+TOOLMARGIN
+
+        self.buttons += [Button(tool_x,self.tool_y, self.tool_h,self.tool_h, "", PLAYGREEN, "play")]
+        tool_x += self.tool_h + TOOLMARGIN
+
+        self.buttons += [Button(tool_x, self.tool_y, 2*self.tool_h, self.tool_h, "Add Chan", TOOLGREY, "add channel")]
+        tool_x += 2*self.tool_h + TOOLMARGIN
+
+        self.buttons += [Button(tool_x, self.tool_y, self.tool_h//2, self.tool_h, "<", TOOLGREY, "lower tempo")]
+        tool_x += self.tool_h//2 + TOOLMARGIN
+
+        self.buttons += [Button(tool_x, self.tool_y, 3*self.tool_h//2, self.tool_h, "Tempo", TOOLGREY, "tempo")]
+        tool_x += 3*self.tool_h//2 + TOOLMARGIN
+        
+        self.buttons += [Button(tool_x, self.tool_y, self.tool_h//2, self.tool_h, ">", TOOLGREY, "raise tempo")]
+        tool_x += self.tool_h//2 + TOOLMARGIN
+
+        self.buttons += [Button(tool_x, self.tool_y, self.tool_h, self.tool_h, "Save", TOOLGREY, "save")]
+        tool_x += self.tool_h + TOOLMARGIN
+
+        self.buttons += [Button(tool_x, self.tool_y, self.tool_h, self.tool_h, "Load", TOOLGREY, "load")]
+        tool_x += self.tool_h + TOOLMARGIN
         
 
     def drawToolbar(self):
@@ -93,6 +110,8 @@ class Interface(object):
         for channel_i in range(song.curSection.nchannels):
             curchannel_y = self.seq_y+MARGIN+(self.channel_h+MARGIN)*channel_i
             pg.draw.rect(self.screen, WHITE, [MARGIN, curchannel_y, self.channeltitle_w, self.channel_h])
+            chanName = self.font.render(song.curSection.channels[channel_i].name, False, BLACK)
+            self.screen.blit(chanName, (MARGIN, curchannel_y))
             self.drawChannel(curchannel_y, song.nnotes, song.curSection.channels[channel_i].played)    
 
     def drawChannel(self, channel_y, nnotes, played_arr):

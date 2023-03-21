@@ -21,14 +21,14 @@ a sound is some sample to play and a name
 """
 import pygame as pg
 
-verb:bool = True
+verb:bool = False
 
 class Song(object):
 
     def __init__(self, name:str):
         self.name:str = name
         self.sections:[Section] = []
-        self.tempo:int = 100
+        self.tempo:int = 140
         self.nbeats:int = 4
         self.nbars:int = 4
         self.nnotes = self.nbeats*self.nbars

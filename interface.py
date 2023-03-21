@@ -12,7 +12,7 @@ from pygame.locals import (
 )
 
 
-verb = True #verbose tag for printing
+verb = False #verbose tag for printing
 
 MARGIN = 2
 TOOLMARGIN = 3

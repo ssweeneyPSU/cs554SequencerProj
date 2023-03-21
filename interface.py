@@ -120,7 +120,9 @@ class Interface(object):
         for note_i in range(nnotes):
                 if verb: print(f"lit_i {lit_i}, note_i {note_i}")
                 curnote_x = self.channel_x+(self.note_w+MARGIN)*note_i
-                if note_i != lit_i-1:
+                if lit_i==0 and note_i == lit_i-1:
+                    color = LITYELLOW if played_arr[note_i] else LITWHITE
+                elif note_i != lit_i-1:
                     color = YELLOW if played_arr[note_i] else WHITE
                 else:
                     color = LITYELLOW if played_arr[note_i] else LITWHITE

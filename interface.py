@@ -26,6 +26,8 @@ YELLOW = (255,255,0)
 PLAYGREEN = (89, 179, 54)
 PAUSERED = (186, 11, 34)
 TOOLGREY = (125,125,125)
+LITYELLOW = (240, 161, 26)
+LITWHITE = (237, 229, 157)
 
 
 class Interface(object):
@@ -106,23 +108,27 @@ class Interface(object):
         for button in self.buttons:
             button.draw(self.screen)
         
-    def drawSequncer(self,song):
+    def drawSequncer(self, song, lit_i):
         for channel_i in range(song.curSection.nchannels):
             curchannel_y = self.seq_y+MARGIN+(self.channel_h+MARGIN)*channel_i
             pg.draw.rect(self.screen, WHITE, [MARGIN, curchannel_y, self.channeltitle_w, self.channel_h])
             chanName = self.font.render(song.curSection.channels[channel_i].name, False, BLACK)
             self.screen.blit(chanName, (MARGIN, curchannel_y))
-            self.drawChannel(curchannel_y, song.nnotes, song.curSection.channels[channel_i].played)    
+            self.drawChannel(curchannel_y, song.nnotes, song.curSection.channels[channel_i].played, lit_i)    
 
-    def drawChannel(self, channel_y, nnotes, played_arr):
+    def drawChannel(self, channel_y, nnotes, played_arr, lit_i):
         for note_i in range(nnotes):
+                if verb: print(f"lit_i {lit_i}, note_i {note_i}")
                 curnote_x = self.channel_x+(self.note_w+MARGIN)*note_i
-                color = YELLOW if played_arr[note_i] else WHITE
+                if note_i != lit_i-1:
+                    color = YELLOW if played_arr[note_i] else WHITE
+                else:
+                    color = LITYELLOW if played_arr[note_i] else LITWHITE
                 pg.draw.rect(self.screen, color, [curnote_x, channel_y, self.note_w, self.channel_h]) 
 
-    def drawSong(self, song:Song):
+    def drawSong(self, song:Song, lit_i):
         self.drawToolbar()
-        self.drawSequncer(song)
+        self.drawSequncer(song, lit_i)
 
     def checkEvents(self) -> Event:
         for event in pg.event.get():
@@ -147,7 +153,7 @@ class Interface(object):
         if chanClicked < 0 or chanClicked > self.nchannels-1 or noteClicked < 0 or noteClicked > self.nnotes-1: 
             return None
         if verb: print(f"clicked chan {chanClicked}, note {noteClicked}")
-        return ClickNoteEvent(chanClicked,noteClicked)
+        return NoteEvent(chanClicked,noteClicked)
 
     def clickButton(self, mx, my) -> Event:
         if verb: print(f"top of click button at {mx}, {my}")
@@ -161,12 +167,12 @@ class Interface(object):
                             button.changeColor(PAUSERED)
                             button.draw(self.screen)
                             if verb: print("returning a click play event")
-                            return ClickPlayEvent()
+                            return PlayEvent()
                         elif button.color == PAUSERED:
                             button.changeColor(PLAYGREEN)
                             button.draw(self.screen)
                             if verb: print("returning a clickPauseEvent")
-                            return ClickPauseEvent()
+                            return PauseEvent()
                     case "add channel":
                         if verb: print("returning an AddChannelEvent")
                         return AddChannelEvent()

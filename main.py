@@ -7,7 +7,7 @@ from controller import Controller
 from song import *
 from interface import Interface
 
-verb = True
+verb = False
 
 def main():
     gui:Interface = Interface()

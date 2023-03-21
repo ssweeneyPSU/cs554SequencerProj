@@ -27,6 +27,7 @@ class Controller(object):
         self.player = Player()
     
     def run(self):
+        pg.mixer.pre_init(44100, -16, 2, 2048)
         pg.mixer.init()
 
         self.gui.start(self.song.nnotes)
@@ -76,8 +77,8 @@ class Controller(object):
                 top.destroy()
                 soundName = soundPath.split('/')[-1].split('.')[0]
                 if verb: print(f"added soundName {soundName} from path {soundPath}")
-                newSound = Sound(soundName, soundPath)
-                self.song.curSection.addChannel(self.song.nnotes, newSound, soundName)
+                #newSound = Sound(soundName, soundPath)
+                self.song.curSection.addChannel(self.song.nnotes, soundPath, soundName)
                 self.gui.set_nchannels(self.song.curSection.nchannels)
                 self.player.addSound(soundPath)
             case LowerTempoEvent():
@@ -91,6 +92,7 @@ class Controller(object):
                 top.withdraw()
                 filePath = filedialog.asksaveasfilename(parent=top)
                 top.destroy()
+                if not filePath: return
                 with open(filePath, 'wb') as saveFile:
                     pickle.dump(self.song, saveFile)
             case LoadEvent():
@@ -99,6 +101,7 @@ class Controller(object):
                 top.withdraw()
                 loadPath = filedialog.askopenfilename(parent=top)
                 top.destroy()
+                if not loadPath: return
                 with open(loadPath, 'rb') as loadFile:
                     newSong = pickle.load(loadFile)
                     self.song = newSong
@@ -106,7 +109,7 @@ class Controller(object):
                     self.gui.set_nchannels(newSong.curSection.nchannels)
                     self.player.sounds = []
                     for channel in self.song.curSection.channels:
-                        self.player.addSound(channel.sound.path)
+                        self.player.addSound(channel.sound)
             case None:
                 pass
             case _:

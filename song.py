@@ -59,27 +59,17 @@ class Section(object):
         self.nchannels = 0
 
 
-    def addChannel(self, nnotes:int, sound, name:str=None, ):
+    def addChannel(self, nnotes:int, sound:str, name:str=None, ):
         if not name: c = Channel(sound.name, nnotes, sound)
         else: c = Channel(name, nnotes, sound)
         self.channels += [c]
         self.nchannels += 1
 
-class Sound(object):
-
-    def __init__(self, name:str, path:str):
-        self.name = name
-        self.path = path
-        #self.noise = pg.mixer.Sound(self.path)
-    
-    def play(self):
-        pg.mixer.Sound.play(self.noise)
-
 class Channel(object):
 
-    def __init__(self, name:str, nnotes:int, sound:Sound):
+    def __init__(self, name:str, nnotes:int, sound:str):
         self.name:str = name
-        self.sound:Sound = sound
+        self.sound:str = sound
         self.played:[bool] = [False for _ in range(nnotes)]
         self.volume:float = 0.5
 

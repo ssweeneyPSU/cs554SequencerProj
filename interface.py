@@ -16,8 +16,9 @@ verb = True #verbose tag for printing
 
 MARGIN = 2
 TOOLMARGIN = 3
-TOOLBARFRAC = 1/6
-CHANNELTITLEFRAC = 1/10
+TOOLBARFRAC = 1/7
+CHANNELTITLEFRAC = 1/11
+TEXTFRAC = 1/2
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -63,7 +64,7 @@ class Interface(object):
 
     def set_nnotes(self, new_nnotes):
         self.nnotes = new_nnotes
-        self.note_w = (self.w - (self.channeltitle_w+2*MARGIN) - MARGIN)//self.nnotes
+        self.note_w = (self.w - (self.channeltitle_w+2*MARGIN) - self.nnotes*MARGIN)//self.nnotes
     
     def set_nchannels(self, new_nnchannels):
         self.nchannels = new_nnchannels
@@ -76,8 +77,10 @@ class Interface(object):
         self.buttons += [Button(MARGIN+TOOLMARGIN,self.tool_y, self.tool_h,self.tool_h, "", PLAYGREEN, "play")]
         self.buttons += [Button(MARGIN+2*TOOLMARGIN+self.tool_h, self.tool_y, 2*self.tool_h, self.tool_h, "ADD", TOOLGREY, "add channel")]
         self.buttons += [Button(MARGIN+3*TOOLMARGIN+3*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, "<", TOOLGREY, "lower tempo")]
-        self.buttons += [Button(MARGIN+4*TOOLMARGIN+3*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "100", WHITE, "tempo")]
+        self.buttons += [Button(MARGIN+4*TOOLMARGIN+3*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Tempo", TOOLGREY, "tempo")]
         self.buttons += [Button(MARGIN+5*TOOLMARGIN+5*self.tool_h, self.tool_y, self.tool_h//2, self.tool_h, ">", TOOLGREY, "raise tempo")]
+        self.buttons += [Button(MARGIN+6*TOOLMARGIN+5*self.tool_h+self.tool_h//2, self.tool_y, self.tool_h, self.tool_h, "Save", TOOLGREY, "save")]
+        
 
     def drawToolbar(self):
         if self.nbuttons == 0: self.initToolbar()
@@ -136,27 +139,25 @@ class Interface(object):
                     case "play":
                         if button.color == PLAYGREEN:
                             button.changeColor(PAUSERED)
+                            button.draw(self.screen)
                             if verb: print("returning a click play event")
                             return ClickPlayEvent()
                         elif button.color == PAUSERED:
                             button.changeColor(PLAYGREEN)
+                            button.draw(self.screen)
                             if verb: print("returning a clickPauseEvent")
                             return ClickPauseEvent()
                     case "add channel":
                         if verb: print("returning an AddChannelEvent")
                         return AddChannelEvent()
                     case "lower tempo":
-                        tempoButton = [b for b in self.buttons if b.name=="tempo"][0]
-                        tempoButton.text = str(int(tempoButton.text)-1)
-                        if verb: print(f"new tempo button text: {tempoButton.text}")
-                        tempoButton.draw(self.screen)
                         return LowerTempoEvent()
                     case "tempo":
                         return None
                     case "raise tempo":
-                        tempoButton = [b for b in self.buttons if b.name=="tempo"][0]
-                        tempoButton.text = str(int(tempoButton.text)+1)
                         return RaiseTempoEvent()
+                    case "save":
+                        return SaveEvent()
                     case _:
                         print(f"caught unexpected button in gui.clickButton: {button.name}")
 
@@ -178,7 +179,7 @@ class Button(object):
 
     def draw(self, screen):
         if not self.font: 
-            self.font = pg.font.SysFont('Arial', self.height-TOOLMARGIN)
+            self.font = pg.font.SysFont('Arial', int(self.height*TEXTFRAC))
         name = self.font.render(self.text, False, BLACK)
         pg.draw.rect(screen, self.color, [self.left, self.top, self.width, self.height])
         screen.blit(name, (self.left, self.top))

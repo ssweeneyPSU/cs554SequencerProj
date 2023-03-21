@@ -36,8 +36,9 @@ class Controller(object):
             self.gui.backgroundFill()
             self.gui.drawSong(self.song, self.curNote)
             self.gui.update()
-            if self.song.play and time() >= self.nextTimeToPlay:
+            if self.song.play :#and time() >= self.nextTimeToPlay:
                 if verb: print(f"triggered play note at index {self.curNote}")
+                while (time() < self.nextTimeToPlay): pass
                 self.player.playSounds([i for i in range(self.song.curSection.nchannels) if self.song.curSection.channels[i].played[self.curNote]])    
                 self.nextTimeToPlay += self.noteInterval
                 self.curNote += 1
@@ -70,6 +71,7 @@ class Controller(object):
                 self.nextTimeToPlay = 0
             case AddChannelEvent():
                 if verb: print("caught add channel")
+                self.executeEvent(PauseEvent())
                 top = tk.Tk()
                 top.withdraw()
                 soundPath = filedialog.askopenfilename(parent=top)
@@ -87,6 +89,7 @@ class Controller(object):
                 self.song.tempo += 5
                 self.noteInterval = 60/self.song.tempo
             case SaveEvent():
+                self.executeEvent(PauseEvent())
                 top = tk.Tk()
                 top.withdraw()
                 filePath = filedialog.asksaveasfilename(parent=top)
@@ -125,4 +128,4 @@ class Player(object):
 
     def playSounds(self, toPlayList):
         for i in toPlayList:
-            pg.mixer.Sound.play(self.sounds[i])
+            pg.mixer.Channel(i).play(self.sounds[i])

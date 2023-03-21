@@ -49,6 +49,7 @@ class Interface(object):
         self.channeltitle_w = int(CHANNELTITLEFRAC*(self.w-2*MARGIN))
         self.channel_x = self.channeltitle_w+2*MARGIN
         self.note_w = 0
+        self.font = None
 
     def start(self, init_nnotes):
         pg.init()
@@ -69,6 +70,7 @@ class Interface(object):
     def set_nchannels(self, new_nnchannels):
         self.nchannels = new_nnchannels
         self.channel_h = (self.h - self.toolbar_h)//8 if self.nchannels <= 8 else (self.h - self.toolbar_h)//self.nchannels
+        self.font = pg.font.SysFont('Arial', int(self.channel_h*TEXTFRAC))
 
     def backgroundFill(self, color=BLACK):
         self.screen.fill(color)
@@ -93,6 +95,8 @@ class Interface(object):
         for channel_i in range(song.curSection.nchannels):
             curchannel_y = self.seq_y+MARGIN+(self.channel_h+MARGIN)*channel_i
             pg.draw.rect(self.screen, WHITE, [MARGIN, curchannel_y, self.channeltitle_w, self.channel_h])
+            chanName = self.font.render(song.curSection.channels[channel_i].name, False, BLACK)
+            self.screen.blit(chanName, (MARGIN, curchannel_y))
             self.drawChannel(curchannel_y, song.nnotes, song.curSection.channels[channel_i].played)    
 
     def drawChannel(self, channel_y, nnotes, played_arr):

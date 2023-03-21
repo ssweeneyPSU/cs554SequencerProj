@@ -74,7 +74,8 @@ class Controller(object):
                 top.withdraw()
                 soundPath = filedialog.askopenfilename(parent=top)
                 top.destroy()
-                soundName = soundPath.split('\\')[-1].split('.')[0]
+                soundName = soundPath.split('/')[-1].split('.')[0]
+                if verb: print(f"added soundName {soundName} from path {soundPath}")
                 newSound = Sound(soundName, soundPath)
                 self.song.curSection.addChannel(self.song.nnotes, newSound, soundName)
                 self.gui.set_nchannels(self.song.curSection.nchannels)

@@ -24,16 +24,10 @@ class Controller(object):
         self.curNote = 0
         self.running = True
         self.nextTimeToPlay = 0
+        self.player = Player()
     
     def run(self):
         pg.mixer.init()
-        #init test song
-        """
-        kick = Sound("kick", "kick.wav")
-        snare = Sound("snare", "snare.wav")
-        self.song.curSection.addChannel(self.song.nnotes, kick)
-        self.song.curSection.addChannel(self.song.nnotes, snare)
-        """
 
         self.gui.start(self.song.nnotes)
         curNote = 0
@@ -44,7 +38,8 @@ class Controller(object):
             self.gui.update()
             if self.song.play and time() >= self.nextTimeToPlay:
                 if verb: print(f"triggered play note at index {curNote}")
-                self.song.playNote(curNote)
+                #self.song.playNote(curNote)
+                self.player.playSounds([i for i in range(self.song.curSection.nchannels) if self.song.curSection.channels[i].played[curNote]])    
                 self.nextTimeToPlay += self.noteInterval
                 curNote += 1
                 if curNote >= self.song.nnotes:
@@ -83,6 +78,7 @@ class Controller(object):
                 newSound = Sound(soundName, soundPath)
                 self.song.curSection.addChannel(self.song.nnotes, newSound, soundName)
                 self.gui.set_nchannels(self.song.curSection.nchannels)
+                self.player.addSound(soundPath)
             case LowerTempoEvent():
                 self.song.tempo -= 1
                 self.noteInterval = 60/self.song.tempo
@@ -107,9 +103,23 @@ class Controller(object):
                     self.song = newSong
                     self.gui.set_nnotes(newSong.nnotes)
                     self.gui.set_nchannels(newSong.curSection.nchannels)
+                    self.player.sounds = []
+                    for channel in self.song.curSection.channels:
+                        self.player.addSound(channel.sound.path)
             case None:
                 pass
             case _:
                 self.running = False
                 print(f"encountered unexpected event in controller.executeEvent(): {e}")
             
+class Player(object):
+
+    def __init__(self):
+        self.sounds = []
+    
+    def addSound(self, soundPath):
+        self.sounds += [pg.mixer.Sound(soundPath)]
+
+    def playSounds(self, toPlayList):
+        for i in toPlayList:
+            pg.mixer.Sound.play(self.sounds[i])
